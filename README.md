@@ -26,74 +26,151 @@ Developed by: Sethukkarasi C
 RegisterNumber:  212223230201
 */
 ```
+<br>
 
 ```
-import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_absolute_error,mean_squared_error
-import matplotlib.pyplot as plt
+import numpy as np
 ```
+<br>
 
 ```
-dataset=pd.read_csv('student_scores.csv')
-print(dataset.head())
-print(dataset.tail())
+df = pd.read_csv("50_Startups.csv")
 ```
+<br>
+
+```
+df.head()
+```
+<br>
 
 ![output1](/o1.png)
+<br>
 
 ```
-dataset.info()
+df.tail()
 ```
+<br>
 
-![out2](o2.png)
+![out2](/o2.png)
 
 ```
-#assigning hours to X & scores to Y
-X = dataset.iloc[:,:-1].values
-print(X)
-Y = dataset.iloc[:,-1].values
-print(Y)
+df.info()
 ```
+<br>
 
 ![out3](/o3.png)
+<br>
 
 ```
-#Building the model
-m = 0
-c = 0
-
-L = 0.001  #The learning Rate
-epochs = 5000  #The number of iterations to perform the task
-
-n = float(len(X)) # Number of elements in X
-error = []
-#Performing Gradient Descent
-for i in range(epochs):
-    Y_pred = m*X + c # The current  predicted value of Y
-    D_m = (-2/n) * sum(X * (Y - Y_pred))   # Derivative wrt m
-    D_c = (-2/n) * sum(Y - Y_pred)   # Derivative wrt c
-    m = m - L * D_m   # Update m
-    c = c - L * D_c   # Update c
-    
-    error.append(sum(Y - Y_pred)**2)
-
-print(m,c)
+X = (df.iloc[1:,:-2].values)
+y = (df.iloc[1:,-1].values).reshape(-1,1)
 ```
+<br>
+
+```
+print(X)
+```
+<br>
 
 ![out4](/o4.png)
+<br>
+
+```
+print(y)
+```
+<br>
+
+![out5](/o5.png)
+<br>
+
+```
+from sklearn.preprocessing import StandardScaler
+def multivariate_linear_regression(X1,Y):
+    X = np.c_[np.ones(len(X1)),X1]
+    theta = np.zeros(X.shape[1]).reshape(-1,1)
+    num_iters = 1000
+    error = []
+    learning_rate = 0.001
+    
+    for _ in range(num_iters):
+        # Calculatenpredictions
+        predictions = (X).dot(theta).reshape(-1,1)
+        
+        #Calculate errors
+        errors = (predictions - Y).reshape(-1,1)
+        
+        #Upadte theta using gradient descent
+        theta -= learning_rate * (1 / len(X1)) * X.T.dot(errors)
+        
+        # Record the error for each iteration
+        error.append(np.mean(errors ** 2))
+
+    return theta, error, num_iters
+```
+<br>
+
+```
+scaler = StandardScaler()
+```
+<br>
+
+```
+X_scaled = scaler.fit_transform(X)
+Y_scaled = scaler.fit_transform(y)
+```
+<br>
+
+```
+print(X_scaled)
+```
+<br>
+
+![out6](/o6.png)
+<br>
+
+```
+print(Y_scaled)
+```
+<br>
+
+![out7](/o7.png)
+<br>
+
+```
+# Train the model using scaled data
+theta, error, num_iters = multivariate_linear_regression(X_scaled,Y_scaled)
+```
+<br>
+
+```
+# Print the results
+print("Theta:", theta)
+print("Errors:", error)
+print("Number of iterations:", num_iters)
+```
+<br>
+
+![out8](/o8.png)
+<br>
 
 ```
 type(error)
 print(len(error))
-plt.plot(range(0,epochs),error)
 ```
+<br>
 
-![out5](/o5.png)
+![out9](/o9.png)
+<br>
 
+```
+import matplotlib.pyplot as plt
+plt.plot(range(0,num_iters),error)
+```
+<br>
 
-![out6](/o6.png)
-
+![out10](/o10.png)
+<br>
 
 ## Result:
 Thus the program to implement the linear regression using gradient descent is written and verified using python programming.
